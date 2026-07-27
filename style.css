@@ -234,6 +234,24 @@ em{font-style:normal}
 .rz-item .nm{font-size:15px;font-weight:500}
 .rz-item .pt{font-size:12px;color:var(--muted);margin-left:8px}
 .rz-item .kc{font-family:var(--num);font-weight:600;font-size:15px;color:var(--sage-deep);white-space:nowrap}
+.rz-item-l{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px}
+
+/* 出典（成分表 / AI推定）バッジ */
+.rz-src{display:inline-flex;align-items:center;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:999px;letter-spacing:.02em;white-space:nowrap}
+.src-seibun{background:var(--sage-soft);color:var(--sage-deep)}
+.src-mixed{background:#F3EBDA;color:#9A7B2E}
+.src-ai{background:#EFEDE7;color:var(--muted)}
+.rz-src-note{margin-top:14px;font-size:11.5px;color:var(--muted);line-height:1.6;border-top:1px dashed var(--line-soft);padding-top:12px}
+
+/* 成分表の根拠バンド */
+.rz-basis{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(150deg,var(--sage-soft),#F1F5EC);border:1px solid #D8E2CE;border-radius:var(--radius);padding:18px 20px}
+.rz-basis.is-ai{background:linear-gradient(150deg,#F4F2EC,#F7F5EF);border-color:var(--line)}
+.rz-basis-ic{font-size:22px;line-height:1.2;flex:0 0 auto}
+.rz-basis-body{flex:1;min-width:0}
+.rz-basis-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.rz-basis-h b{font-family:var(--serif);font-size:15px;color:var(--ink);font-weight:700}
+.rz-basis-ratio{font-family:var(--num);font-size:11px;font-weight:700;letter-spacing:.04em;background:var(--sage-deep);color:#fff;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.rz-basis-body p{margin-top:5px;font-size:12.5px;color:var(--ink-soft);line-height:1.65}
 
 /* comment */
 .rz-comment{background:linear-gradient(150deg,var(--gold-soft),#FBF5E6);border-radius:var(--radius);padding:clamp(22px,3.5vw,30px);border:1px solid #ECDDB8}

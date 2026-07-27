@@ -198,6 +198,9 @@ function renderResult(d) {
 
   const items = Array.isArray(d.items) ? d.items : [];
   const advice = Array.isArray(d.advice) ? d.advice : [];
+  const basis = d.basis || '';
+  const gratio = Math.round((Number(d.grounded_ratio) || 0) * 100);
+  const isAi = d.source_mode === 'holistic';
 
   const hasCTA = !!CFG.CTA_URL;
   const salt = (t.salt_g != null) ? `<span>塩分 ${num(t.salt_g, 1)}g</span>` : '';
@@ -218,6 +221,18 @@ function renderResult(d) {
       <div class="val">${num(kcal)}<small>kcal</small></div>
       <div class="sub">1日の目安（${num(target)}kcal）の約 <b>${dayPct}%</b>${extras ? '　/　' + extras : ''}</div>
     </div>
+
+    ${basis ? `
+    <div class="rz-basis ${isAi ? 'is-ai' : ''}">
+      <span class="rz-basis-ic">${isAi ? '🤖' : '📗'}</span>
+      <div class="rz-basis-body">
+        <div class="rz-basis-h">
+          <b>${isAi ? 'AIによる推定値' : '日本食品標準成分表 2020年版（八訂）に基づく算出'}</b>
+          ${isAi ? '' : `<span class="rz-basis-ratio">成分表準拠 ${gratio}%</span>`}
+        </div>
+        <p>${esc(basis)}</p>
+      </div>
+    </div>` : ''}
 
     <div class="rz-card">
       <div class="rz-card-h"><h4>PFCバランス</h4><span class="tag">たんぱく質・脂質・炭水化物</span></div>
@@ -248,12 +263,19 @@ function renderResult(d) {
     <div class="rz-card">
       <div class="rz-card-h"><h4>認識した料理</h4><span class="tag">${items.length}品</span></div>
       <div class="rz-items">
-        ${items.map((it) => `
+        ${items.map((it) => {
+          const sb = { seibun: ['📗', '成分表で計算'], mixed: ['📗', '一部AI推定'], ai: ['🤖', 'AI推定'] }[it.source] || ['', ''];
+          return `
           <div class="rz-item">
-            <div><span class="nm">${esc(it.name || '')}</span>${it.portion ? `<span class="pt">${esc(it.portion)}</span>` : ''}</div>
+            <div class="rz-item-l">
+              <span class="nm">${esc(it.name || '')}</span>${it.portion ? `<span class="pt">${esc(it.portion)}</span>` : ''}
+              ${sb[0] ? `<span class="rz-src src-${it.source}" title="${sb[1]}">${sb[0]} ${sb[1]}</span>` : ''}
+            </div>
             <div class="kc">${num(it.kcal)} kcal</div>
-          </div>`).join('')}
+          </div>`;
+        }).join('')}
       </div>
+      ${basis && !isAi ? `<p class="rz-src-note">📗＝日本食品標準成分表の公式値で計算／🤖＝写真から判別しづらくAIが推定</p>` : ''}
     </div>` : ''}
 
     ${d.comment ? `
@@ -346,13 +368,16 @@ if (new URLSearchParams(location.search).has('demo')) {
     is_food: true,
     dish_name: '鶏むね肉のグリル定食',
     confidence: 'high',
+    basis: '日本食品標準成分表2020年版（八訂）に基づき算出。照合できない食材はAIが推定。',
+    grounded_ratio: 0.86,
+    source_mode: 'grounded',
     items: [
-      { name: '鶏むね肉のグリル', portion: '約120g', kcal: 165, protein_g: 26, fat_g: 5, carb_g: 1 },
-      { name: '白ごはん', portion: '茶碗1杯(150g)', kcal: 234, protein_g: 4, fat_g: 0.5, carb_g: 52 },
-      { name: 'ブロッコリーとトマトのサラダ', portion: '小鉢1つ', kcal: 45, protein_g: 3, fat_g: 1.5, carb_g: 6 },
-      { name: 'みそ汁', portion: 'お椀1杯', kcal: 40, protein_g: 3, fat_g: 1, carb_g: 5 },
+      { name: '鶏むね肉のグリル', portion: '約120g', kcal: 165, protein_g: 26, fat_g: 5, carb_g: 1, source: 'seibun' },
+      { name: '白ごはん', portion: '約150g', kcal: 234, protein_g: 4, fat_g: 0.5, carb_g: 52, source: 'seibun' },
+      { name: 'ブロッコリーとトマトのサラダ', portion: '約80g', kcal: 45, protein_g: 3, fat_g: 1.5, carb_g: 6, source: 'mixed' },
+      { name: 'みそ汁', portion: '約165g', kcal: 40, protein_g: 3, fat_g: 1, carb_g: 5, source: 'mixed' },
     ],
-    total: { kcal: 484, protein_g: 36, fat_g: 8, carb_g: 64, salt_g: 2.8, fiber_g: 6, sugar_g: 8 },
+    total: { kcal: 484, protein_g: 36, fat_g: 8, carb_g: 64, salt_g: 2.8, fiber_g: 6 },
     diet_score: 82,
     verdict: '高たんぱくで優秀な一皿',
     comment: '鶏むね肉と野菜でたんぱく質と食物繊維がしっかり摂れており、脂質も控えめ。ダイエット中の食事として非常にバランスの良い一皿です。ごはんの量だけ調整すれば、さらに理想的になります。',
