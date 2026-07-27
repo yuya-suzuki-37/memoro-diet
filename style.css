@@ -34,6 +34,8 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
+/* hidden属性を最優先に（.loading/.lx-actions等の display 指定より強くする） */
+[hidden]{display:none !important}
 html{scroll-behavior:smooth}
 body.lx{
   font-family:var(--sans);
