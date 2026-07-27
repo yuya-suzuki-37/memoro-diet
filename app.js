@@ -15,6 +15,94 @@ function proxyUrl() {
 }
 
 let currentFile = null;
+let lastResultData = null;
+
+/* ============================================================
+   プロフィール（任意）とパーソナル栄養目標
+   端末内(localStorage)にのみ保存。外部送信しない＝完全クライアント側。
+   ============================================================ */
+const PROFILE_KEY = 'repas_profile_v1';
+const ACTIVITY = {
+  '1': { label: 'ほとんど運動しない（デスクワーク中心）', factor: 1.2 },
+  '2': { label: '軽い運動（週1〜2回）', factor: 1.375 },
+  '3': { label: '中程度（週3〜5回の運動）', factor: 1.55 },
+  '4': { label: '激しい（週6〜7回の運動）', factor: 1.725 },
+  '5': { label: '非常に激しい（毎日ハード／肉体労働）', factor: 1.9 },
+};
+const GOALS = {
+  lose:     { label: '減量（ダイエット）', kcalFactor: 0.80, proteinPerKg: 2.0 },
+  maintain: { label: '体型維持',           kcalFactor: 1.00, proteinPerKg: 1.6 },
+  gain:     { label: '増量（筋肉づくり）',   kcalFactor: 1.10, proteinPerKg: 2.0 },
+};
+
+function loadProfile() { try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || null; } catch (e) { return null; } }
+function saveProfileObj(p) { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); } catch (e) {} }
+function clearProfileObj() { try { localStorage.removeItem(PROFILE_KEY); } catch (e) {} }
+
+/* Mifflin-St Jeor で BMR→TDEE→目標カロリー→PFC目標 を算出 */
+function computeTargets(p) {
+  if (!p) return null;
+  const w = +p.weight, h = +p.height, a = +p.age;
+  if (!(w > 0) || !(h > 0) || !(a > 0) || !p.sex || !p.activity || !p.goal) return null;
+  const bmr = 10 * w + 6.25 * h - 5 * a + (p.sex === 'male' ? 5 : -161);
+  const act = (ACTIVITY[p.activity] || ACTIVITY['1']).factor;
+  const tdee = bmr * act;
+  const g = GOALS[p.goal] || GOALS.maintain;
+  let kcal = tdee * g.kcalFactor;
+  kcal = Math.max(kcal, p.sex === 'male' ? 1500 : 1200); // 安全下限
+  kcal = Math.round(kcal / 10) * 10;
+  const protein = Math.round(w * g.proteinPerKg);
+  const fat = Math.round((kcal * 0.25) / 9);
+  const carb = Math.max(0, Math.round((kcal - protein * 4 - fat * 9) / 4));
+  return { tdee: Math.round(tdee), kcal, protein, fat, carb, goal: p.goal, goalLabel: g.label };
+}
+function getTargets() { return window.__demoTargets || computeTargets(loadProfile()); }
+
+/* プロフィール入力パネルを #profile-mount に描画 */
+function renderProfilePanel() {
+  const mount = $('profile-mount');
+  if (!mount) return;
+  const p = loadProfile() || {};
+  const t = computeTargets(p);
+  const opt = (v, cur, label) => `<option value="${v}" ${cur === v ? 'selected' : ''}>${label}</option>`;
+  const actOpts = Object.entries(ACTIVITY).map(([k, v]) => opt(k, p.activity, v.label)).join('');
+  const goalOpts = Object.entries(GOALS).map(([k, v]) => opt(k, p.goal, v.label)).join('');
+  mount.innerHTML = `
+    <div class="profile-panel">
+      <button class="profile-toggle" id="pf-toggle">
+        <span>👤 ${t ? 'プロフィール設定済み（タップで編集）' : 'プロフィールを入力して「あなた専用診断」にする（任意）'}</span>
+        <span class="pf-tog-ic">${t ? '✓' : '＋'}</span>
+      </button>
+      <div class="profile-form" id="pf-form" ${t ? 'hidden' : ''}>
+        <div class="pf-grid">
+          <label class="pf-field"><span>性別</span><select id="pf-sex"><option value="">選択</option>${opt('male', p.sex, '男性')}${opt('female', p.sex, '女性')}</select></label>
+          <label class="pf-field"><span>年齢</span><input id="pf-age" type="number" inputmode="numeric" value="${p.age || ''}" placeholder="30"></label>
+          <label class="pf-field"><span>身長 (cm)</span><input id="pf-height" type="number" inputmode="numeric" value="${p.height || ''}" placeholder="165"></label>
+          <label class="pf-field"><span>体重 (kg)</span><input id="pf-weight" type="number" inputmode="numeric" value="${p.weight || ''}" placeholder="60"></label>
+          <label class="pf-field pf-wide"><span>活動量</span><select id="pf-activity"><option value="">選択</option>${actOpts}</select></label>
+          <label class="pf-field pf-wide"><span>目標</span><select id="pf-goal"><option value="">選択</option>${goalOpts}</select></label>
+        </div>
+        <div class="pf-actions">
+          <button class="lx-btn lx-btn-green" id="pf-save">保存して専用診断にする</button>
+          ${t ? '<button class="lx-btn lx-btn-ghost" id="pf-clear">クリア</button>' : ''}
+        </div>
+        <p class="pf-note">🔒 入力はこの端末内にのみ保存され、外部には送信されません（栄養目標の計算にのみ使用）。目標値は標準式による目安です。</p>
+      </div>
+      ${t ? `<div class="pf-summary"><span class="pf-sum-goal">${esc(t.goalLabel)}</span><span>1日の目標 <b>${num(t.kcal)}</b>kcal</span><span class="pf-sum-pfc">P${t.protein}・F${t.fat}・C${t.carb}g</span></div>` : ''}
+    </div>`;
+  const tog = $('pf-toggle'), form = $('pf-form');
+  if (tog) tog.addEventListener('click', () => { form.hidden = !form.hidden; });
+  const save = $('pf-save');
+  if (save) save.addEventListener('click', () => {
+    const np = { sex: $('pf-sex').value, age: $('pf-age').value, height: $('pf-height').value, weight: $('pf-weight').value, activity: $('pf-activity').value, goal: $('pf-goal').value };
+    if (!computeTargets(np)) { alert('すべての項目を入力してください（性別・年齢・身長・体重・活動量・目標）。'); return; }
+    saveProfileObj(np);
+    renderProfilePanel();
+    if (lastResultData) renderResult(lastResultData);
+  });
+  const clr = $('pf-clear');
+  if (clr) clr.addEventListener('click', () => { clearProfileObj(); renderProfilePanel(); if (lastResultData) renderResult(lastResultData); });
+}
 
 /* ============================================================
    セクション表示切替
@@ -162,6 +250,7 @@ function num(n, d = 0) { return (Math.round((Number(n) || 0) * Math.pow(10, d)) 
 
 function renderResult(d) {
   const box = $('result-body');
+  lastResultData = d;
 
   if (d && d.is_food === false) {
     box.innerHTML = `<div class="rz"><div class="rz-card" style="text-align:center">
@@ -202,6 +291,10 @@ function renderResult(d) {
   const gratio = Math.round((Number(d.grounded_ratio) || 0) * 100);
   const isAi = d.source_mode === 'holistic';
 
+  // パーソナル診断（プロフィールがあれば専用カード、なければ入力を促すカード）
+  const targets = getTargets();
+  const personalHtml = targets ? personalCardHtml(targets, kcal, P, F, C) : personalPromptHtml();
+
   const hasCTA = !!CFG.CTA_URL;
   const salt = (t.salt_g != null) ? `<span>塩分 ${num(t.salt_g, 1)}g</span>` : '';
   const fiber = (t.fiber_g != null) ? `<span>食物繊維 ${num(t.fiber_g, 1)}g</span>` : '';
@@ -233,6 +326,8 @@ function renderResult(d) {
         <p>${esc(basis)}</p>
       </div>
     </div>` : ''}
+
+    ${personalHtml}
 
     <div class="rz-card">
       <div class="rz-card-h"><h4>PFCバランス</h4><span class="tag">たんぱく質・脂質・炭水化物</span></div>
@@ -311,16 +406,24 @@ function renderResult(d) {
 
   reveal(box);
 
-  // ゲージ・アニメーション
+  // ゲージ・バーのアニメーション
   requestAnimationFrame(() => {
     const fg = box.querySelector('.gauge .fg');
     if (fg) fg.style.strokeDashoffset = fg.getAttribute('data-off');
-    box.querySelectorAll('.pfc-bar span').forEach((el) => { el.style.width = el.getAttribute('data-w'); });
+    box.querySelectorAll('.pfc-bar span, .rzp-m-bar span').forEach((el) => { el.style.width = el.getAttribute('data-w'); });
   });
 
   $('restart').addEventListener('click', restart);
   const sh = $('share');
   if (sh) sh.addEventListener('click', () => shareResult(d));
+  const openP = $('rzp-open');
+  if (openP) openP.addEventListener('click', () => {
+    revealStart();
+    const form = $('pf-form');
+    if (form) form.hidden = false;
+    const panel = $('profile-mount');
+    if (panel) setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
+  });
 }
 
 function pfcRow(k, jp, en, grams, pct) {
@@ -328,6 +431,78 @@ function pfcRow(k, jp, en, grams, pct) {
     <div class="pfc-name">${jp}<small>${en}</small></div>
     <div class="pfc-bar"><span data-w="${Math.max(3, pct)}%"></span></div>
     <div class="pfc-val">${num(grams, 1)}<small>g</small> · ${pct}%</div>
+  </div>`;
+}
+
+/* ---- パーソナル診断カード ---- */
+function personalCardHtml(t, kcal, P, F, C) {
+  const pctKcal = t.kcal > 0 ? Math.round(kcal / t.kcal * 100) : 0;
+  const remK = t.kcal - kcal, remP = t.protein - P, remF = t.fat - F, remC = t.carb - C;
+  const v = personalVerdict(t.goal, pctKcal, P, t.protein);
+  const rem = (val, unit) => (val >= 0
+    ? `あと <b>${num(Math.round(val))}</b>${unit}`
+    : `<b class="over">${num(Math.abs(Math.round(val)))}${unit} 超過</b>`);
+  return `
+  <div class="rz-personal">
+    <div class="rzp-head">
+      <span class="rzp-badge">あなた専用診断</span>
+      <span class="rzp-goal">目標：${esc(t.goalLabel)}　/　1日 ${num(t.kcal)}kcal</span>
+    </div>
+    <div class="rzp-verdict v-${v.cls}"><span class="rzp-v-ic">${v.icon}</span><span>${esc(v.text)}</span></div>
+    <div class="rzp-body">
+      <div class="rzp-ring" style="--pct:${Math.min(100, pctKcal)}"><b>${pctKcal}<i>%</i></b><span>1日の目標比</span></div>
+      <div class="rzp-side">
+        <p class="rzp-line">この一食は、1日の目標 <b>${num(t.kcal)}kcal</b> の <b>${pctKcal}%</b>（${num(kcal)}kcal）</p>
+        <p class="rzp-rem">1日の残り目安：${rem(remK, 'kcal')}　<span class="rzp-rem-pfc">P ${rem(remP, 'g')}・F ${rem(remF, 'g')}・C ${rem(remC, 'g')}</span></p>
+      </div>
+    </div>
+    <div class="rzp-macros">
+      ${personalMacroRow('たんぱく質', P, t.protein, 'P')}
+      ${personalMacroRow('脂質', F, t.fat, 'F')}
+      ${personalMacroRow('炭水化物', C, t.carb, 'C')}
+    </div>
+    <p class="rzp-note">※ 目標値は標準式（Mifflin-St Jeor）による目安です。医療・栄養指導を代替するものではありません。持病・妊娠中・治療中の方は専門家にご相談ください。</p>
+  </div>`;
+}
+
+function personalMacroRow(jp, meal, target, k) {
+  const pct = target > 0 ? Math.round(meal / target * 100) : 0;
+  return `<div class="rzp-macro pfc-${k}">
+    <div class="rzp-m-name">${jp}</div>
+    <div class="rzp-m-bar"><span data-w="${Math.min(100, Math.max(2, pct))}%"></span></div>
+    <div class="rzp-m-val">${num(meal, 1)} / ${num(target)}g<small> ・${pct}%</small></div>
+  </div>`;
+}
+
+function personalVerdict(goal, pctKcal, mealP, targetP) {
+  const proteinGood = mealP >= targetP * 0.28;
+  if (goal === 'gain') {
+    if (pctKcal >= 30 && proteinGood) return { icon: '◎', cls: 'good', text: '増量にgood。カロリーもたんぱく質もしっかり摂れています。' };
+    if (pctKcal < 25) return { icon: '○', cls: 'ok', text: '増量目標にはやや軽め。もう少し量を足しても◎。' };
+    return { icon: '○', cls: 'ok', text: 'バランス良好。たんぱく質を意識して増量を進めましょう。' };
+  }
+  if (goal === 'maintain') {
+    if (pctKcal >= 28 && pctKcal <= 42) return { icon: '◎', cls: 'good', text: '維持にちょうど良い一食です。' };
+    if (pctKcal > 47) return { icon: '△', cls: 'warn', text: '1食としてはやや多め。他の食事で調整を。' };
+    return { icon: '○', cls: 'ok', text: 'バランス良好。この調子で維持していきましょう。' };
+  }
+  // lose（減量）
+  if (pctKcal <= 40 && proteinGood) return { icon: '◎', cls: 'good', text: '減量に理想的な一食です。カロリー適量＆たんぱく質しっかり。' };
+  if (pctKcal <= 40) return { icon: '○', cls: 'ok', text: 'カロリーは適量。たんぱく質をもう少し足すとさらに◎。' };
+  if (pctKcal <= 50) return { icon: '△', cls: 'warn', text: '1食としてはやや多め。次の食事は軽めに調整を。' };
+  return { icon: '⚠', cls: 'bad', text: 'この一食で1日目標の半分超。残りはかなり軽めに。' };
+}
+
+function personalPromptHtml() {
+  return `
+  <div class="rz-personal is-prompt">
+    <div class="rzp-prompt">
+      <div>
+        <b>👤 あなた専用の診断にできます</b>
+        <p>年齢・体格・目標を入れると、この一食が「あなたの1日の目標に対してどうか」まで診断します（任意・端末内にのみ保存）。</p>
+      </div>
+      <button class="lx-btn lx-btn-green" id="rzp-open">プロフィールを入力する</button>
+    </div>
   </div>`;
 }
 
@@ -363,7 +538,10 @@ function esc(s) {
    サンプル結果を描画（デザイン確認用）。本番では無害。
    例: http://localhost:5060/?demo=1
    ============================================================ */
+renderProfilePanel(); // 起動時にプロフィールパネルを描画
+
 if (new URLSearchParams(location.search).has('demo')) {
+  window.__demoTargets = { tdee: 1980, kcal: 1600, protein: 108, fat: 44, carb: 188, goal: 'lose', goalLabel: '減量（ダイエット）' };
   renderResult({
     is_food: true,
     dish_name: '鶏むね肉のグリル定食',
