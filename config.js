@@ -8,7 +8,7 @@ window.REPAS_CONFIG = {
      - ローカルテスト中(localhost)は自動で同一オリジンの /api/analyze を使うので変更不要。
      - 本番公開時は、デプロイした Cloudflare Worker のURLをここに貼る。
        例: "https://repas-proxy.あなたのサブドメイン.workers.dev/api/analyze"          */
-  PROXY_URL: "",
+  PROXY_URL: "https://repas-proxy.yuya-suzuki-37.workers.dev/api/analyze",
 
   /* 診断結果の下に出す「次の一歩」CTA。
      LINE公式 / 予約フォーム / UTAGE等のURLに差し替える。
