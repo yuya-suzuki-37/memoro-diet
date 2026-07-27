@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Repas Atelier｜AI食事栄養診断（カロリー・PFC）</title>
+<meta name="description" content="食事の写真を1枚アップするだけで、AIがカロリー・たんぱく質・脂質・炭水化物を推定。ダイエットの味方になる無料の食事診断ツール。" />
+<meta property="og:title" content="Repas Atelier｜AI食事栄養診断" />
+<meta property="og:description" content="写真1枚で、食事を数字に。AIがカロリー・PFCを瞬時に推定します。" />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Shippori+Mincho:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1" />
+</head>
+<body class="lx">
+
+<div class="lx-topbar">AI MEAL NUTRITION ATELIER — 写真1枚で、食事を数字にする。</div>
+
+<header class="lx-header">
+  <a class="lx-logo" href="#top">
+    <span class="lx-logo-mark">R</span>
+    <span class="lx-logo-text">Repas<em>Atelier</em></span>
+  </a>
+  <nav class="lx-nav">
+    <a href="#about">特徴</a>
+    <a href="#start" class="js-reveal">診断する</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="lx-hero" id="top">
+  <div class="lx-hero-bg" aria-hidden="true"></div>
+  <div class="lx-hero-inner">
+    <p class="lx-hero-eyebrow">Eat smart, stay light</p>
+    <h1 class="lx-hero-title">その一皿は、<br><i>何キロカロリー？</i></h1>
+    <p class="lx-hero-lead">
+      食事の写真を1枚アップするだけ。AIが料理を認識し、<br>
+      <strong>カロリー・PFC（たんぱく質・脂質・炭水化物）</strong>を瞬時に推定します。
+    </p>
+    <a href="#start" class="lx-btn lx-btn-gold js-reveal">無料で診断する</a>
+    <p class="lx-hero-note">登録不要・完全無料 / 所要 約10秒</p>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="lx-about" id="about">
+  <div class="lx-about-item"><span class="lx-about-no">01</span><h3>AIが料理を認識</h3><p>最新の画像認識AIが写真から料理を判別。ごはん・主菜・副菜まで一品ずつ読み取ります。</p></div>
+  <div class="lx-about-item"><span class="lx-about-no">02</span><h3>カロリー・PFCを推定</h3><p>総カロリーとP（たんぱく質）F（脂質）C（炭水化物）のバランスを数字とグラフで表示します。</p></div>
+  <div class="lx-about-item"><span class="lx-about-no">03</span><h3>ダイエット診断</h3><p>ダイエット向きかを100点満点でスコア化。今日の一皿への具体アドバイスもお届けします。</p></div>
+</section>
+
+<!-- STEP 01: UPLOAD -->
+<section class="lx-start" id="start" hidden>
+  <div class="lx-sec-head">
+    <span class="lx-sec-no">STEP 01</span>
+    <h2 class="lx-sec-title">食事の写真をアップロード</h2>
+    <p class="lx-sec-sub">料理全体が写るように、真上〜斜め上から明るく撮るのがおすすめ。一品でも定食でもOK。写真はAI解析のためだけに使用され、保存されません。</p>
+  </div>
+  <div class="lx-upload-panel">
+    <div id="up">
+      <input type="file" id="file" accept="image/*" capture="environment" hidden>
+      <label for="file" class="up-btn">📷 食事の写真を選ぶ / 撮影する</label>
+      <p class="up-hint">または <b>⌘V で貼り付け</b> ／ ここに画像を <b>ドラッグ&ドロップ</b></p>
+      <div class="preview" id="preview" hidden>
+        <img id="preview-img" alt="アップロードした食事" />
+      </div>
+      <p id="status" class="up-status">JPEG / PNG / HEIC（iPhone写真）に対応しています。</p>
+      <div id="after-upload" class="lx-actions" hidden>
+        <button class="lx-btn lx-btn-green" id="analyze">この食事を診断する</button>
+        <button class="lx-btn lx-btn-ghost" id="reselect">写真を選び直す</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section class="lx-section" id="result" hidden>
+  <div class="lx-sec-head">
+    <span class="lx-sec-no">RESULT</span>
+    <h2 class="lx-sec-title">あなたの食事診断</h2>
+  </div>
+  <div id="result-body"></div>
+</section>
+
+<!-- FOOTER -->
+<footer class="lx-footer">
+  <div class="lx-foot-brand">Repas<em>Atelier</em></div>
+  <div class="lx-foot-links"><span>プライバシーポリシー</span><span>利用規約</span><span>免責事項</span></div>
+  <p class="lx-foot-disc">本ツールが表示する栄養価は、写真からAIが推定した<strong>目安値</strong>です。実際の食材量・調理法により変動し、医療上の栄養指導・治療を代替するものではありません。持病・アレルギー等がある方は専門家にご相談ください。</p>
+  <div class="lx-foot-copy">© 2026 Repas Atelier</div>
+</footer>
+
+<div id="loading" class="loading" hidden><div class="spin"></div><span id="loading-text">AIが食事を解析中…</span></div>
+
+<script src="config.js?v=1"></script>
+<script type="module" src="app.js?v=1"></script>
+</body>
+</html>
