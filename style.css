@@ -213,6 +213,20 @@ em{font-style:normal}
 .pfc-F .pfc-bar span{background:var(--f)} .pfc-F .pfc-name{color:#C08A1E}
 .pfc-C .pfc-bar span{background:var(--c)} .pfc-C .pfc-name{color:var(--c)}
 .pfc-legend{margin-top:16px;font-size:12px;color:var(--muted);text-align:center}
+.pfc-legend b{color:var(--ink-soft);font-weight:600}
+.pfc-lead{font-size:13px;color:var(--ink-soft);margin-bottom:14px;text-align:center}
+.pfc-lead b{color:var(--sage-deep)}
+.pfc-verdict{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:14px;font-size:13.5px;font-weight:600;line-height:1.6;margin-bottom:18px}
+.pfc-v-ic{font-size:18px;flex:0 0 auto}
+.pfc-verdict.v-good{background:var(--sage-soft);color:var(--sage-deep)}
+.pfc-verdict.v-ok{background:#EEF3E7;color:#5a6e4d}
+.pfc-verdict.v-warn{background:var(--gold-soft);color:#9A7B2E}
+.pfc-val-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.pfc-judge{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.pfc-judge.j-good{background:var(--sage-soft);color:var(--sage-deep)}
+.pfc-judge.j-ok{background:#EEF3E7;color:#6b7d5c}
+.pfc-judge.j-low,.pfc-judge.j-warn{background:var(--gold-soft);color:#9A7B2E}
+.pfc-judge.j-bad{background:#FBEAE3;color:var(--terra-deep)}
 
 /* diet score gauge */
 .rz-score{display:flex;align-items:center;gap:24px;flex-wrap:wrap;justify-content:center}

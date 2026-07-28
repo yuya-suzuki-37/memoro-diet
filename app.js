@@ -294,6 +294,8 @@ function renderResult(d) {
   // パーソナル診断（プロフィールがあれば専用カード、なければ入力を促すカード）
   const targets = getTargets();
   const personalHtml = targets ? personalCardHtml(targets, kcal, P, F, C) : personalPromptHtml();
+  // PFCバランス診断（痩せやすさの観点で評価。プロフィール有無どちらでも）
+  const bal = pfcBalance(P, F, C, targets);
 
   const hasCTA = !!CFG.CTA_URL;
   const salt = (t.salt_g != null) ? `<span>塩分 ${num(t.salt_g, 1)}g</span>` : '';
@@ -330,13 +332,15 @@ function renderResult(d) {
     ${personalHtml}
 
     <div class="rz-card">
-      <div class="rz-card-h"><h4>PFCバランス</h4><span class="tag">たんぱく質・脂質・炭水化物</span></div>
+      <div class="rz-card-h"><h4>PFCバランス診断</h4><span class="tag">${targets ? 'あなたの目標比' : 'ダイエット目安比'}</span></div>
+      <p class="pfc-lead">同じカロリーでも、<b>PFCバランス</b>で痩せやすさは変わります。</p>
+      <div class="pfc-verdict v-${bal.overall.cls}"><span class="pfc-v-ic">${bal.overall.icon}</span><span>${esc(bal.overall.text)}</span></div>
       <div class="pfc">
-        ${pfcRow('P', 'たんぱく質', 'Protein', P, pctP)}
-        ${pfcRow('F', '脂質', 'Fat', F, pctF)}
-        ${pfcRow('C', '炭水化物', 'Carbs', C, pctC)}
+        ${pfcRow('P', 'たんぱく質', 'Protein', P, pctP, bal.P)}
+        ${pfcRow('F', '脂質', 'Fat', F, pctF, bal.F)}
+        ${pfcRow('C', '炭水化物', 'Carbs', C, pctC, bal.C)}
       </div>
-      <p class="pfc-legend">※ %はカロリー換算での構成比（たんぱく質・脂質 各1gあたり4・9kcal で計算）</p>
+      <p class="pfc-legend">※ 構成比（P・F 各1gあたり4・9kcal）を、理想比 <b>P${bal.ideal.p}%・F${bal.ideal.f}%・C${bal.ideal.c}%</b>（${targets ? 'あなたの目標' : 'ダイエット向けの一般的な目安'}）と比べて評価しています。</p>
     </div>
 
     <div class="rz-card rz-score">
@@ -426,12 +430,46 @@ function renderResult(d) {
   });
 }
 
-function pfcRow(k, jp, en, grams, pct) {
+function pfcRow(k, jp, en, grams, pct, judge) {
+  const j = judge ? `<div class="pfc-judge j-${judge.cls}">${judge.icon} ${judge.label}</div>` : '';
   return `<div class="pfc-row pfc-${k}">
     <div class="pfc-name">${jp}<small>${en}</small></div>
     <div class="pfc-bar"><span data-w="${Math.max(3, pct)}%"></span></div>
-    <div class="pfc-val">${num(grams, 1)}<small>g</small> · ${pct}%</div>
+    <div class="pfc-val-wrap">
+      <div class="pfc-val">${num(grams, 1)}<small>g</small> · ${pct}%</div>
+      ${j}
+    </div>
   </div>`;
+}
+
+/* この食事のPFCバランスを「痩せやすさ」の観点で評価
+   理想比: プロフィールがあればその目標比、なければダイエット向け一般値(P30/F25/C45) */
+function pfcBalance(P, F, C, targets) {
+  const pP = P * 4, pF = F * 9, pC = C * 4, tot = (pP + pF + pC) || 1;
+  const mr = { p: pP / tot, f: pF / tot, c: pC / tot };
+  let ideal;
+  if (targets) {
+    const tt = (targets.protein * 4 + targets.fat * 9 + targets.carb * 4) || 1;
+    ideal = { p: targets.protein * 4 / tt, f: targets.fat * 9 / tt, c: targets.carb * 4 / tt };
+  } else {
+    ideal = { p: 0.30, f: 0.25, c: 0.45 };
+  }
+  const rp = mr.p / ideal.p, rf = mr.f / ideal.f, rc = mr.c / ideal.c;
+  const Pj = rp >= 0.95 ? { cls: 'good', icon: '◎', label: '十分' } : rp >= 0.70 ? { cls: 'ok', icon: '○', label: 'まずまず' } : { cls: 'low', icon: '△', label: '不足ぎみ' };
+  const Fj = rf <= 1.25 ? { cls: 'good', icon: '◎', label: '適正' } : rf <= 1.70 ? { cls: 'warn', icon: '△', label: 'やや多め' } : { cls: 'bad', icon: '✕', label: '多め' };
+  const Cj = rc <= 1.15 ? { cls: 'good', icon: '◎', label: '適正' } : rc <= 1.40 ? { cls: 'warn', icon: '△', label: 'やや多め' } : { cls: 'bad', icon: '✕', label: '多め' };
+  const msgs = [];
+  if (Pj.cls === 'low') msgs.push('たんぱく質が不足ぎみ。同じカロリーでも、たんぱく質を増やすと筋肉を保ちながら痩せやすくなります');
+  if (Cj.cls !== 'good') msgs.push('炭水化物に偏りぎみ。ごはん・麺を少し減らしてたんぱく質に置き換えると痩せやすく');
+  if (Fj.cls === 'bad') msgs.push('脂質が多め。揚げ物・油を控えると脂肪になりにくいです');
+  let overall;
+  if (msgs.length === 0) {
+    overall = { cls: 'good', icon: '◎', text: '痩せやすいバランスです。高たんぱくで脂質・糖質も適正。この調子で！' };
+  } else {
+    const bad = (Pj.cls === 'low' || Cj.cls === 'bad' || Fj.cls === 'bad');
+    overall = { cls: bad ? 'warn' : 'ok', icon: bad ? '△' : '○', text: msgs.slice(0, 2).join('。') + '。' };
+  }
+  return { overall, P: Pj, F: Fj, C: Cj, ideal: { p: Math.round(ideal.p * 100), f: Math.round(ideal.f * 100), c: Math.round(ideal.c * 100) } };
 }
 
 /* ---- パーソナル診断カード ---- */
