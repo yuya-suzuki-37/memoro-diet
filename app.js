@@ -391,6 +391,8 @@ function renderResult(d) {
       </ul>
     </div>` : ''}
 
+    ${sourcesHtml()}
+
     ${hasCTA ? `
     <div class="rz-cta">
       <div class="lab">Next Step</div>
@@ -470,6 +472,23 @@ function pfcBalance(P, F, C, targets) {
     overall = { cls: bad ? 'warn' : 'ok', icon: bad ? '△' : '○', text: msgs.slice(0, 2).join('。') + '。' };
   }
   return { overall, P: Pj, F: Fj, C: Cj, ideal: { p: Math.round(ideal.p * 100), f: Math.round(ideal.f * 100), c: Math.round(ideal.c * 100) } };
+}
+
+/* 診断の根拠・出典（信頼性の可視化） */
+function sourcesHtml() {
+  return `
+  <details class="rz-sources">
+    <summary>📚 この診断の根拠・出典</summary>
+    <ul>
+      <li><b>食事の栄養価</b>：日本食品標準成分表 2020年版（八訂）／文部科学省</li>
+      <li><b>カロリー目標</b>：Mifflin-St Jeor式 — 安静時代謝の推定式として最も正確と実証（米国栄養士会誌, 2005 系統的レビュー）</li>
+      <li><b>たんぱく質目標</b>：国際スポーツ栄養学会（ISSN）公式指針 2017 — 減量期の筋肉維持に高たんぱく（1.6〜2.0g/kg以上）を推奨</li>
+      <li><b>高たんぱくの効果</b>：メタ分析で、減量時の高たんぱく食は体脂肪の減少と除脂肪量（筋肉）の維持に有効と報告（Am J Clin Nutr ほか）</li>
+      <li><b>PFCバランス</b>：米国IOMのAMDR（たんぱく質10–35%／脂質20–35%／炭水化物45–65%）を基準に、ダイエット向けへ最適化</li>
+      <li><b>減量ペース</b>：NHS／CDC — 週に体重の0.5〜1%（約 −500kcal/日）が安全</li>
+    </ul>
+    <p class="rz-src-disc">※ 目標値・理想比は上記に基づく「目安」です。医療・栄養指導を代替するものではありません。</p>
+  </details>`;
 }
 
 /* ---- パーソナル診断カード ---- */
