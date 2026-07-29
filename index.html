@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Shippori+Mincho:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=7" />
+<link rel="stylesheet" href="style.css?v=8" />
 </head>
 <body class="lx">
 
@@ -32,14 +32,57 @@
 <section class="lx-hero" id="top">
   <div class="lx-hero-bg" aria-hidden="true"></div>
   <div class="lx-hero-inner">
-    <p class="lx-hero-eyebrow">Eat smart, stay light</p>
-    <h1 class="lx-hero-title">その一皿は、<br><i>何キロカロリー？</i></h1>
-    <p class="lx-hero-lead">
-      食事の写真を1枚アップするだけ。AIが料理を認識し、<br>
-      <strong>カロリー・PFC（たんぱく質・脂質・炭水化物）</strong>を瞬時に推定します。
-    </p>
-    <a href="#start" class="lx-btn lx-btn-gold js-reveal">無料で診断する</a>
-    <p class="lx-hero-note">登録不要・完全無料 / 所要 約10秒</p>
+    <div class="lx-hero-text">
+      <p class="lx-hero-eyebrow">Eat smart, stay light</p>
+      <h1 class="lx-hero-title">その一皿は、<br><i>何キロカロリー？</i></h1>
+      <p class="lx-hero-lead">
+        食事の写真を1枚アップするだけ。AIが料理を認識し、<br>
+        <strong>カロリー・PFC（たんぱく質・脂質・炭水化物）</strong>を瞬時に推定します。
+      </p>
+      <a href="#start" class="lx-btn lx-btn-gold js-reveal">無料で診断する</a>
+      <p class="lx-hero-note">登録不要・完全無料 / 所要 約10秒</p>
+    </div>
+    <div class="lx-hero-visual" aria-hidden="true">
+      <svg class="hero-svg" viewBox="0 0 460 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="食事とAI栄養診断のイメージ">
+        <defs>
+          <radialGradient id="hgGlow" cx="50%" cy="45%" r="60%">
+            <stop offset="0%" stop-color="#C9A24B" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#C9A24B" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="hgPlate" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#F6F1E7"/>
+          </linearGradient>
+        </defs>
+        <circle cx="230" cy="235" r="220" fill="url(#hgGlow)"/>
+        <ellipse cx="232" cy="422" rx="150" ry="18" fill="#8A8272" opacity="0.10"/>
+        <circle cx="230" cy="240" r="170" fill="url(#hgPlate)" stroke="#E4DDCC" stroke-width="2"/>
+        <circle cx="230" cy="240" r="151" fill="none" stroke="#EDE6D6" stroke-width="1.5"/>
+        <!-- ごはん -->
+        <ellipse cx="168" cy="214" rx="56" ry="50" fill="#FFFFFF" stroke="#E4DDCC" stroke-width="1.5"/>
+        <path d="M120 207 q48 -34 96 0 q-14 21 -48 21 q-34 0 -48 -21 z" fill="#F4EFE4"/>
+        <circle cx="150" cy="202" r="2.4" fill="#E7DFCD"/><circle cx="172" cy="198" r="2.4" fill="#E7DFCD"/><circle cx="192" cy="205" r="2.4" fill="#E7DFCD"/><circle cx="162" cy="212" r="2.2" fill="#E7DFCD"/><circle cx="184" cy="213" r="2.2" fill="#E7DFCD"/>
+        <!-- 焼き魚（主菜） -->
+        <path d="M262 176 q58 -4 74 30 q16 38 -28 56 q-54 20 -76 -22 q-16 -44 30 -64 z" fill="#DE8E63"/>
+        <path d="M278 196 q40 4 46 34" stroke="#F3C6A2" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.75"/>
+        <path d="M270 216 q42 2 54 26" stroke="#F3C6A2" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6"/>
+        <!-- ブロッコリー -->
+        <g fill="#6E8A5E"><circle cx="150" cy="302" r="16"/><circle cx="169" cy="294" r="14"/><circle cx="167" cy="310" r="13"/><circle cx="152" cy="288" r="12"/></g>
+        <rect x="157" y="306" width="7" height="15" rx="3" fill="#8DA57C"/>
+        <!-- ミニトマト -->
+        <circle cx="212" cy="310" r="15" fill="#CF6A4F"/><circle cx="207" cy="304" r="4" fill="#E89B83" opacity="0.7"/>
+        <!-- レモン -->
+        <path d="M252 302 a26 26 0 0 1 40 12 l-40 14 z" fill="#E7C24C"/>
+        <path d="M252 302 a26 26 0 0 1 40 12 l-40 14 z" fill="none" stroke="#F2DE95" stroke-width="2"/>
+        <!-- 浮遊チップ: カロリー -->
+        <g class="hero-chip"><rect x="298" y="82" width="120" height="46" rx="23" fill="#556B4E"/><text x="358" y="111" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="21" fill="#fff">484 <tspan font-size="12" font-weight="500">kcal</tspan></text></g>
+        <!-- 浮遊チップ: PFCドーナツ -->
+        <g class="hero-chip hero-chip-b"><circle cx="80" cy="128" r="35" fill="#fff" stroke="#E4DDCC"/><circle cx="80" cy="128" r="22" fill="none" stroke="#EDE6D6" stroke-width="7"/><g transform="rotate(-90 80 128)"><circle cx="80" cy="128" r="22" fill="none" stroke="#D06A4E" stroke-width="7" stroke-dasharray="43 95" stroke-linecap="round"/><circle cx="80" cy="128" r="22" fill="none" stroke="#E0A73B" stroke-width="7" stroke-dasharray="20 118" stroke-dashoffset="-43" stroke-linecap="round"/><circle cx="80" cy="128" r="22" fill="none" stroke="#5E86A8" stroke-width="7" stroke-dasharray="75 63" stroke-dashoffset="-63" stroke-linecap="round"/></g><text x="80" y="132" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#556B4E">PFC</text></g>
+        <!-- 浮遊チップ: たんぱく質 -->
+        <g class="hero-chip hero-chip-c"><rect x="322" y="332" width="98" height="40" rx="20" fill="#fff" stroke="#E4DDCC"/><circle cx="345" cy="352" r="6" fill="#D06A4E"/><text x="359" y="357" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#2B2A26">P 36g</text></g>
+        <!-- きらめき -->
+        <path d="M402 172 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4 z" fill="#C9A24B" opacity="0.85"/>
+      </svg>
+    </div>
   </div>
 </section>
 
@@ -89,7 +132,7 @@
 <!-- FOOTER -->
 <footer class="lx-footer">
   <div class="lx-foot-brand">Mem<em>oro</em></div>
-  <div class="lx-foot-links"><span>プライバシーポリシー</span><span>利用規約</span><span>免責事項</span></div>
+  <div class="lx-foot-links"><a href="./privacy.html">プライバシーポリシー</a><a href="./terms.html">利用規約</a><a href="./disclaimer.html">免責事項</a></div>
   <p class="lx-foot-disc">本ツールが表示する栄養価は、写真からAIが推定した<strong>目安値</strong>です。実際の食材量・調理法により変動し、医療上の栄養指導・治療を代替するものではありません。持病・アレルギー等がある方は専門家にご相談ください。</p>
   <div class="lx-foot-copy">© 2026 Memoro</div>
 </footer>
