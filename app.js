@@ -207,15 +207,18 @@ function base64FromBuffer(buf) {
    ============================================================ */
 $('analyze').addEventListener('click', analyze);
 
-async function analyze() {
+async function analyze(hint) {
   if (!currentFile) { setStatus('先に写真を選んでください。', true); return; }
-  showLoading(true);
+  // ボタンのclickイベント経由だと第1引数がEventになるので文字列だけ採用
+  const hintText = (typeof hint === 'string') ? hint.trim() : '';
+  showLoading(true, hintText ? 'reanalyze' : 'analyze');
   try {
     const image = await prepareImage(currentFile);
+    const body = hintText ? { image, hint: hintText } : { image };
     const res = await fetch(proxyUrl(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image }),
+      body: JSON.stringify(body),
     });
     if (!res.ok) {
       const t = await res.text().catch(() => '');
@@ -232,10 +235,12 @@ async function analyze() {
   showLoading(false);
 }
 
-function showLoading(on) {
+function showLoading(on, mode) {
   $('loading').hidden = !on;
   if (on) {
-    const msgs = ['AIが食事を解析中…', '料理を認識しています…', '栄養価を計算しています…'];
+    const msgs = mode === 'reanalyze'
+      ? ['ヒントをもとに再解析中…', '料理を認識し直しています…', '栄養価を計算しています…']
+      : ['AIが食事を解析中…', '料理を認識しています…', '栄養価を計算しています…'];
     let i = 0;
     $('loading-text').textContent = msgs[0];
     clearInterval(showLoading._t);
@@ -418,6 +423,15 @@ function drawResult(scroll) {
       ${basis && !isAi && !editMode ? `<p class="rz-src-note">📗＝日本食品標準成分表の公式値で計算／🤖＝写真から判別しづらくAIが推定</p>` : ''}
     </div>` : ''}
 
+    <div class="rz-fix">
+      <button type="button" class="rz-fix-toggle" id="fix-toggle" aria-expanded="false">🔎 料理の認識が違う？<span class="rz-fix-caret">▾</span></button>
+      <div class="rz-fix-body" id="fix-body" hidden>
+        <p class="rz-fix-note">正しい料理名や、抜けている料理を入力して<b>再解析</b>できます。入力した内容をAIが正として認識し直します。<br><span class="rz-fix-ex">例：「これは天ぷら定食です」／「左はカレーではなくハヤシライス」／「奥に唐揚げが2個あります」</span></p>
+        <textarea id="fix-hint" class="rz-fix-input" rows="2" maxlength="200" placeholder="正しい料理名・訂正内容を入力…"></textarea>
+        <div class="rz-fix-act"><button type="button" class="lx-btn lx-btn-green" id="fix-run">この内容で再解析する</button></div>
+      </div>
+    </div>
+
     ${d.comment ? `
     <div class="rz-comment">
       <div class="q">&ldquo;</div>
@@ -463,6 +477,24 @@ function drawResult(scroll) {
   $('restart').addEventListener('click', restart);
   const sh = $('share');
   if (sh) sh.addEventListener('click', () => shareResult(d));
+
+  // 「認識が違う？」→ ヒント再解析の配線
+  const fixToggle = $('fix-toggle');
+  if (fixToggle) fixToggle.addEventListener('click', () => {
+    const b = $('fix-body'); if (!b) return;
+    const willShow = b.hidden;
+    b.hidden = !willShow;
+    fixToggle.setAttribute('aria-expanded', willShow ? 'true' : 'false');
+    fixToggle.classList.toggle('open', willShow);
+    if (willShow) { const ta = $('fix-hint'); if (ta) setTimeout(() => ta.focus(), 40); }
+  });
+  const fixRun = $('fix-run');
+  if (fixRun) fixRun.addEventListener('click', () => {
+    const ta = $('fix-hint');
+    const v = ta ? ta.value.trim() : '';
+    if (!v) { if (ta) { ta.focus(); ta.classList.add('shake'); setTimeout(() => ta.classList.remove('shake'), 500); } return; }
+    analyze(v);
+  });
   const openP = $('rzp-open');
   if (openP) openP.addEventListener('click', () => {
     revealStart();

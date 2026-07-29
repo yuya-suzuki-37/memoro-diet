@@ -269,6 +269,23 @@ em{font-style:normal}
 .src-ai{background:#EFEDE7;color:var(--muted)}
 .rz-src-note{margin-top:14px;font-size:11.5px;color:var(--muted);line-height:1.6;border-top:1px dashed var(--line-soft);padding-top:12px}
 
+/* 認識が違う？ → ヒント再解析 */
+.rz-fix{border:1px dashed var(--line);border-radius:16px;background:#FCFAF4;overflow:hidden}
+.rz-fix-toggle{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:none;border:0;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink-soft);padding:15px 16px}
+.rz-fix-toggle:hover{color:var(--sage-deep)}
+.rz-fix-caret{transition:transform .25s;font-size:11px;color:var(--gold)}
+.rz-fix-toggle.open .rz-fix-caret{transform:rotate(180deg)}
+.rz-fix-body{padding:2px 16px 18px}
+.rz-fix-note{font-size:12.5px;color:var(--ink-soft);line-height:1.75;margin-bottom:11px}
+.rz-fix-note b{color:var(--sage-deep)}
+.rz-fix-ex{color:var(--muted);font-size:11.5px}
+.rz-fix-input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;background:#fff;padding:11px 13px;font-family:inherit;font-size:14px;color:var(--ink);resize:vertical;line-height:1.6}
+.rz-fix-input:focus{outline:none;border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-soft)}
+.rz-fix-act{margin-top:11px}
+.rz-fix-act .lx-btn{width:100%}
+.rz-fix-input.shake{animation:rzShake .4s;border-color:var(--terra)}
+@keyframes rzShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+
 /* 成分表の根拠バンド */
 .rz-basis{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(150deg,var(--sage-soft),#F1F5EC);border:1px solid #D8E2CE;border-radius:var(--radius);padding:18px 20px}
 .rz-basis.is-ai{background:linear-gradient(150deg,#F4F2EC,#F7F5EF);border-color:var(--line)}
