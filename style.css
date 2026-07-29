@@ -405,3 +405,21 @@ em{font-style:normal}
 .rz-sources li::before{content:'•';position:absolute;left:0;color:var(--sage);font-weight:700}
 .rz-sources li b{color:var(--ink)}
 .rz-src-disc{margin:8px 0 14px;font-size:11px;color:var(--muted);line-height:1.6}
+
+/* 量調整UI */
+.rz-edited{display:inline-block;font-size:11px;font-weight:600;background:rgba(255,255,255,.22);color:#fff;padding:2px 9px;border-radius:999px;margin-left:6px;vertical-align:middle}
+.rz-edit-note{font-size:12px;color:var(--sage-deep);background:var(--sage-soft);border-radius:10px;padding:9px 12px;margin-bottom:12px;line-height:1.6}
+.rz-edit-bar{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.rz-edit-bar .lx-btn{padding:11px 20px;font-size:13px}
+.rz-item.is-editing{grid-template-columns:1fr auto auto;gap:10px}
+.rz-edit-ctl{display:flex;align-items:center;gap:8px}
+.ed-btn{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--sage);background:var(--sage-soft);color:var(--sage-deep);font-size:17px;font-weight:700;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
+.ed-btn:hover{background:var(--sage);color:#fff}
+.ed-g{font-family:var(--num);font-size:14px;font-weight:600;min-width:44px;text-align:center;color:var(--ink)}
+.ed-rm{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);background:var(--paper);color:var(--muted);font-size:14px;cursor:pointer;display:grid;place-items:center;padding:0;margin-left:4px}
+.ed-rm:hover{border-color:var(--terra);color:var(--terra)}
+.rz-item.is-removed{opacity:.6}
+.rz-item.is-removed .nm{text-decoration:line-through}
+.rz-item.is-removed .pt{color:var(--terra)}
+.ed-restore{background:none;border:1.5px solid var(--sage);color:var(--sage-deep);border-radius:999px;font-size:12px;font-weight:600;padding:5px 14px;cursor:pointer}
+.ed-restore:hover{background:var(--sage-soft)}

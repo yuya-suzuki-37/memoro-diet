@@ -15,7 +15,9 @@ function proxyUrl() {
 }
 
 let currentFile = null;
-let lastResultData = null;
+let lastResultData = null;   // 元の解析結果（不変）
+let editState = null;        // 料理ごとの量調整状態
+let editMode = false;        // 量調整モードON/OFF
 
 /* ============================================================
    プロフィール（任意）とパーソナル栄養目標
@@ -98,7 +100,7 @@ function renderProfilePanel() {
     if (!computeTargets(np)) { alert('すべての項目を入力してください（性別・年齢・身長・体重・活動量・目標）。'); return; }
     saveProfileObj(np);
     renderProfilePanel();
-    if (lastResultData) renderResult(lastResultData);
+    if (lastResultData) drawResult(false);
   });
   const clr = $('pf-clear');
   if (clr) clr.addEventListener('click', () => { clearProfileObj(); renderProfilePanel(); if (lastResultData) renderResult(lastResultData); });
@@ -248,9 +250,52 @@ function showLoading(on) {
    ============================================================ */
 function num(n, d = 0) { return (Math.round((Number(n) || 0) * Math.pow(10, d)) / Math.pow(10, d)).toLocaleString('ja-JP'); }
 
-function renderResult(d) {
+/* 新しい解析結果を表示（編集状態をリセット） */
+function renderResult(dNew) {
+  lastResultData = dNew;
+  editState = freshEdit(dNew);
+  editMode = false;
+  drawResult(true);
+}
+
+/* 量調整の初期状態を作る */
+function parseGrams(portion) {
+  const m = String(portion == null ? '' : portion).match(/(\d+(?:\.\d+)?)\s*g/);
+  return m ? parseFloat(m[1]) : 0;
+}
+function freshEdit(d) {
+  if (!d || !Array.isArray(d.items)) return null;
+  return d.items.map((it) => {
+    const g = parseGrams(it.portion);
+    return { g0: g, g: g, removed: false, base: { kcal: Number(it.kcal) || 0, p: Number(it.protein_g) || 0, f: Number(it.fat_g) || 0, c: Number(it.carb_g) || 0 } };
+  });
+}
+/* 元データ + 編集状態 → 表示用データ（量調整を反映して再計算） */
+function computeView(orig, edit) {
+  if (!orig || orig.is_food === false || !edit) return orig;
+  const items = [];
+  let tk = 0, tp = 0, tf = 0, tc = 0, edited = false;
+  (orig.items || []).forEach((it, i) => {
+    const e = edit[i];
+    if (!e) { items.push(it); tk += Number(it.kcal) || 0; tp += Number(it.protein_g) || 0; tf += Number(it.fat_g) || 0; tc += Number(it.carb_g) || 0; return; }
+    if (e.removed) { items.push({ ...it, removed: true }); edited = true; return; }
+    const fct = e.g0 > 0 ? e.g / e.g0 : 1;
+    if (Math.abs(e.g - e.g0) > 0.5) edited = true;
+    items.push({ ...it, portion: e.g0 > 0 ? `約${Math.round(e.g)}g` : it.portion,
+      kcal: Math.round(e.base.kcal * fct), protein_g: Math.round(e.base.p * fct * 10) / 10,
+      fat_g: Math.round(e.base.f * fct * 10) / 10, carb_g: Math.round(e.base.c * fct * 10) / 10 });
+    tk += e.base.kcal * fct; tp += e.base.p * fct; tf += e.base.f * fct; tc += e.base.c * fct;
+  });
+  const ot = orig.total || {}; const ok = Number(ot.kcal) || 0; const ratio = ok > 0 ? tk / ok : 1;
+  return { ...orig, items, _edited: edited,
+    total: { kcal: Math.round(tk), protein_g: Math.round(tp * 10) / 10, fat_g: Math.round(tf * 10) / 10, carb_g: Math.round(tc * 10) / 10,
+      salt_g: Math.round((Number(ot.salt_g) || 0) * ratio * 10) / 10, fiber_g: Math.round((Number(ot.fiber_g) || 0) * ratio * 10) / 10 } };
+}
+
+function drawResult(scroll) {
   const box = $('result-body');
-  lastResultData = d;
+  const d = computeView(lastResultData, editState);
+  if (!d) return;
 
   if (d && d.is_food === false) {
     box.innerHTML = `<div class="rz"><div class="rz-card" style="text-align:center">
@@ -258,7 +303,7 @@ function renderResult(d) {
       <p style="color:var(--ink-soft);font-size:14px">料理全体が明るく写った写真で、もう一度お試しください。</p>
       <div class="lx-actions"><button class="lx-btn lx-btn-green" id="restart">写真を選び直す</button></div>
     </div></div>`;
-    reveal(box);
+    if (scroll) reveal(box);
     $('restart').addEventListener('click', restart);
     return;
   }
@@ -312,7 +357,7 @@ function renderResult(d) {
     </div>
 
     <div class="rz-kcal">
-      <div class="lab">Total Energy</div>
+      <div class="lab">Total Energy${d._edited ? ' <span class="rz-edited">✏️ 調整済み</span>' : ''}</div>
       <div class="val">${num(kcal)}<small>kcal</small></div>
       <div class="sub">1日の目安（${num(target)}kcal）の約 <b>${dayPct}%</b>${extras ? '　/　' + extras : ''}</div>
     </div>
@@ -360,21 +405,17 @@ function renderResult(d) {
 
     ${items.length ? `
     <div class="rz-card">
-      <div class="rz-card-h"><h4>認識した料理</h4><span class="tag">${items.length}品</span></div>
+      <div class="rz-card-h"><h4>認識した料理</h4><span class="tag">${items.filter((it) => !it.removed).length}品</span></div>
+      ${editMode ? `<p class="rz-edit-note">実際に食べた量に「−／＋」で調整、違う料理は「×」で除くと、下の栄養が自動で再計算されます。</p>` : ''}
       <div class="rz-items">
-        ${items.map((it) => {
-          const sb = { seibun: ['📗', '成分表で計算'], mixed: ['📗', '一部AI推定'], ai: ['🤖', 'AI推定'] }[it.source] || ['', ''];
-          return `
-          <div class="rz-item">
-            <div class="rz-item-l">
-              <span class="nm">${esc(it.name || '')}</span>${it.portion ? `<span class="pt">${esc(it.portion)}</span>` : ''}
-              ${sb[0] ? `<span class="rz-src src-${it.source}" title="${sb[1]}">${sb[0]} ${sb[1]}</span>` : ''}
-            </div>
-            <div class="kc">${num(it.kcal)} kcal</div>
-          </div>`;
-        }).join('')}
+        ${items.map((it, i) => itemRow(it, i)).join('')}
       </div>
-      ${basis && !isAi ? `<p class="rz-src-note">📗＝日本食品標準成分表の公式値で計算／🤖＝写真から判別しづらくAIが推定</p>` : ''}
+      <div class="rz-edit-bar">
+        ${editMode
+          ? `<button class="lx-btn lx-btn-ghost" id="ed-reset">調整をリセット</button><button class="lx-btn lx-btn-green" id="ed-done">調整を終える</button>`
+          : `<button class="lx-btn lx-btn-ghost" id="ed-start">✏️ 実際に食べた量に調整する</button>`}
+      </div>
+      ${basis && !isAi && !editMode ? `<p class="rz-src-note">📗＝日本食品標準成分表の公式値で計算／🤖＝写真から判別しづらくAIが推定</p>` : ''}
     </div>` : ''}
 
     ${d.comment ? `
@@ -410,7 +451,7 @@ function renderResult(d) {
 
   </div>`;
 
-  reveal(box);
+  if (scroll) reveal(box);
 
   // ゲージ・バーのアニメーション
   requestAnimationFrame(() => {
@@ -430,6 +471,56 @@ function renderResult(d) {
     const panel = $('profile-mount');
     if (panel) setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
   });
+
+  // 量調整モードの配線
+  const edStart = $('ed-start'); if (edStart) edStart.addEventListener('click', () => { editMode = true; drawResult(false); });
+  const edDone = $('ed-done'); if (edDone) edDone.addEventListener('click', () => { editMode = false; drawResult(false); });
+  const edReset = $('ed-reset'); if (edReset) edReset.addEventListener('click', () => { editState = freshEdit(lastResultData); drawResult(false); });
+  const itemsWrap = box.querySelector('.rz-items');
+  if (itemsWrap && editMode) {
+    itemsWrap.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('[data-act]');
+      if (!btn) return;
+      const i = +btn.getAttribute('data-i'); const e = editState && editState[i];
+      if (!e) return;
+      const act = btn.getAttribute('data-act');
+      if (act === 'inc' || act === 'dec') {
+        const step = Math.max(5, Math.round(e.g0 * 0.1 / 5) * 5);
+        e.g = Math.max(5, e.g + (act === 'inc' ? step : -step));
+      } else if (act === 'rm') { e.removed = true; }
+      else if (act === 'restore') { e.removed = false; }
+      drawResult(false);
+    });
+  }
+}
+
+/* 量調整モードの料理行 */
+function itemRow(it, i) {
+  const e = (editState && editState[i]) || {};
+  if (editMode) {
+    if (it.removed) {
+      return `<div class="rz-item is-removed"><div class="rz-item-l"><span class="nm">${esc(it.name || '')}</span><span class="pt">除外中</span></div><button class="ed-restore" data-act="restore" data-i="${i}">戻す</button></div>`;
+    }
+    const canScale = e.g0 > 0;
+    return `<div class="rz-item is-editing">
+      <div class="rz-item-l"><span class="nm">${esc(it.name || '')}</span></div>
+      <div class="rz-edit-ctl">
+        ${canScale ? `<button class="ed-btn" data-act="dec" data-i="${i}" aria-label="減らす">−</button><span class="ed-g">${Math.round(e.g)}g</span><button class="ed-btn" data-act="inc" data-i="${i}" aria-label="増やす">＋</button>` : ''}
+        <button class="ed-rm" data-act="rm" data-i="${i}" title="この料理を除く">×</button>
+      </div>
+      <div class="kc">${num(it.kcal)} kcal</div>
+    </div>`;
+  }
+  if (it.removed) return '';
+  const sb = { seibun: ['📗', '成分表で計算'], mixed: ['📗', '一部AI推定'], ai: ['🤖', 'AI推定'] }[it.source] || ['', ''];
+  return `
+    <div class="rz-item">
+      <div class="rz-item-l">
+        <span class="nm">${esc(it.name || '')}</span>${it.portion ? `<span class="pt">${esc(it.portion)}</span>` : ''}
+        ${sb[0] ? `<span class="rz-src src-${it.source}" title="${sb[1]}">${sb[0]} ${sb[1]}</span>` : ''}
+      </div>
+      <div class="kc">${num(it.kcal)} kcal</div>
+    </div>`;
 }
 
 function pfcRow(k, jp, en, grams, pct, judge) {
