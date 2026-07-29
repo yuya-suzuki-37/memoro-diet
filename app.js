@@ -1,5 +1,5 @@
 /* ============================================================
-   Repas Atelier — フロント制御
+   Memoro — フロント制御
    アップロード → 画像圧縮 → プロキシ経由でAI解析 → 結果描画
    ============================================================ */
 const CFG = window.REPAS_CONFIG || {};
@@ -673,8 +673,8 @@ function restart() {
 
 function shareResult(d) {
   const t = d.total || {};
-  const txt = `【${d.dish_name || '食事診断'}】約${num(t.kcal)}kcal / P${num(t.protein_g)}・F${num(t.fat_g)}・C${num(t.carb_g)}g（AI食事栄養診断 Repas Atelier）`;
-  navigator.share({ title: 'Repas Atelier 食事診断', text: txt, url: location.href }).catch(() => {});
+  const txt = `【${d.dish_name || '食事診断'}】約${num(t.kcal)}kcal / P${num(t.protein_g)}・F${num(t.fat_g)}・C${num(t.carb_g)}g（Memoro AI食事栄養診断）`;
+  navigator.share({ title: 'Memoro 食事診断', text: txt, url: location.href }).catch(() => {});
 }
 
 function esc(s) {
