@@ -269,22 +269,26 @@ em{font-style:normal}
 .src-ai{background:#EFEDE7;color:var(--muted)}
 .rz-src-note{margin-top:14px;font-size:11.5px;color:var(--muted);line-height:1.6;border-top:1px dashed var(--line-soft);padding-top:12px}
 
-/* 認識が違う？ → ヒント再解析 */
-.rz-fix{border:1px dashed var(--line);border-radius:16px;background:#FCFAF4;overflow:hidden}
-.rz-fix-toggle{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:none;border:0;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink-soft);padding:15px 16px}
-.rz-fix-toggle:hover{color:var(--sage-deep)}
-.rz-fix-caret{transition:transform .25s;font-size:11px;color:var(--gold)}
-.rz-fix-toggle.open .rz-fix-caret{transform:rotate(180deg)}
-.rz-fix-body{padding:2px 16px 18px}
-.rz-fix-note{font-size:12.5px;color:var(--ink-soft);line-height:1.75;margin-bottom:11px}
-.rz-fix-note b{color:var(--sage-deep)}
-.rz-fix-ex{color:var(--muted);font-size:11.5px}
-.rz-fix-input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;background:#fff;padding:11px 13px;font-family:inherit;font-size:14px;color:var(--ink);resize:vertical;line-height:1.6}
-.rz-fix-input:focus{outline:none;border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-soft)}
-.rz-fix-act{margin-top:11px}
-.rz-fix-act .lx-btn{width:100%}
-.rz-fix-input.shake{animation:rzShake .4s;border-color:var(--terra)}
-@keyframes rzShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+/* 食品の差し替え・追加（成分表ピッカー・Gemini不使用） */
+.ed-swap{width:34px;height:34px;border:1px solid var(--line);background:#fff;border-radius:50%;cursor:pointer;font-size:15px;line-height:1;display:inline-flex;align-items:center;justify-content:center;color:var(--sage-deep)}
+.ed-swap:hover{border-color:var(--sage);background:var(--sage-soft)}
+.rz-tag-sw{display:inline-block;margin-left:8px;font-size:10.5px;font-weight:700;color:var(--sage-deep);background:var(--sage-soft);border-radius:6px;padding:2px 7px;vertical-align:middle}
+.rz-tag-sw.is-add{color:#8A6D1F;background:var(--gold-soft)}
+.rz-picker{border:1px solid var(--sage);border-radius:16px;background:#FCFBF7;padding:14px 15px 16px;margin:6px 0 14px;box-shadow:0 10px 26px rgba(85,107,78,.10)}
+.rz-picker-h{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:11px}
+.rz-picker-x{width:28px;height:28px;border:0;background:none;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;border-radius:8px;flex:none}
+.rz-picker-x:hover{background:#EEE7D8;color:var(--ink)}
+.rz-picker-input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px 13px;font-family:inherit;font-size:15px;color:var(--ink)}
+.rz-picker-input:focus{outline:none;border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-soft)}
+.rz-picker-g{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft);margin:10px 2px 4px}
+.rz-picker-g input{width:80px;border:1px solid var(--line);border-radius:9px;padding:7px 9px;font-family:inherit;font-size:14px;text-align:right}
+.rz-picker-results{margin-top:8px;max-height:270px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.pick-item{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;border:1px solid var(--line-soft);background:#fff;border-radius:11px;padding:10px 12px;cursor:pointer}
+.pick-item:hover{border-color:var(--sage);background:var(--sage-soft)}
+.pick-nm{font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.4}
+.pick-mac{font-size:11px;color:var(--muted)}
+.pick-note{font-size:12.5px;color:var(--muted);padding:10px 4px;line-height:1.6}
+.rz-picker-note{font-size:11px;color:var(--muted);line-height:1.65;margin-top:10px;border-top:1px dashed var(--line-soft);padding-top:9px}
 
 /* 成分表の根拠バンド */
 .rz-basis{display:flex;gap:14px;align-items:flex-start;background:linear-gradient(150deg,var(--sage-soft),#F1F5EC);border:1px solid #D8E2CE;border-radius:var(--radius);padding:18px 20px}
