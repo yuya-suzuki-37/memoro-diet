@@ -124,7 +124,15 @@ em{font-style:normal}
 .lx-hero-inner{position:relative;z-index:1;max-width:1160px;margin:0 auto;display:flex;align-items:center;gap:clamp(24px,4vw,56px)}
 .lx-hero-text{flex:1 1 460px;min-width:0}
 .lx-hero-visual{flex:0 0 auto;width:min(40vw,400px)}
-.hero-svg{width:100%;height:auto;display:block;filter:drop-shadow(0 24px 48px rgba(85,107,78,.14))}
+.hero-photo{position:relative;width:100%}
+.hero-photo>img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:28px;display:block;box-shadow:0 26px 52px rgba(85,107,78,.22);outline:1px solid rgba(199,154,62,.32);outline-offset:-1px}
+.hp-chip{position:absolute;display:flex;align-items:center}
+.hp-cal{top:-16px;right:16px;gap:5px;background:var(--sage-deep);color:#fff;font-weight:700;font-size:20px;padding:11px 20px;border-radius:24px;border:1px solid #D9B65E;box-shadow:0 10px 22px rgba(85,107,78,.3)}
+.hp-cal small{font-size:12px;font-weight:500;color:#E9D7A6}
+.hp-pfc{top:26px;left:-18px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.12))}
+.hp-pfc svg{display:block}
+.hp-p{bottom:22px;right:-10px;gap:7px;background:#fff;border:1px solid #E7CC7E;border-radius:20px;padding:8px 15px;font-weight:600;font-size:14px;color:var(--ink);box-shadow:0 8px 18px rgba(0,0,0,.1)}
+.hp-p i{width:11px;height:11px;border-radius:50%;background:#AC5B37}
 .hero-chip{animation:heroFloat 4.5s ease-in-out infinite}
 .hero-chip-b{animation-duration:5.4s;animation-delay:.4s}
 .hero-chip-c{animation-duration:5s;animation-delay:.9s}
