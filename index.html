@@ -52,44 +52,83 @@
       <p class="lx-hero-note">登録不要・完全無料 / 所要 約10秒</p>
     </div>
     <div class="lx-hero-visual" aria-hidden="true">
-      <svg class="hero-svg" viewBox="0 0 460 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="食事とAI栄養診断のイメージ">
+      <svg class="hero-svg" viewBox="0 0 460 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="高級レストランの一皿とAI栄養診断のイメージ">
         <defs>
           <radialGradient id="hgGlow" cx="50%" cy="45%" r="60%">
-            <stop offset="0%" stop-color="#C9A24B" stop-opacity="0.18"/>
+            <stop offset="0%" stop-color="#C9A24B" stop-opacity="0.16"/>
+            <stop offset="55%" stop-color="#C9A24B" stop-opacity="0.05"/>
             <stop offset="100%" stop-color="#C9A24B" stop-opacity="0"/>
           </radialGradient>
-          <linearGradient id="hgPlate" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#F6F1E7"/>
+          <linearGradient id="hgPlate" x1="0.18" y1="0.05" x2="0.62" y2="1">
+            <stop offset="0%" stop-color="#FFFFFF"/><stop offset="52%" stop-color="#FCFAF4"/><stop offset="100%" stop-color="#EFE7D7"/>
           </linearGradient>
+          <linearGradient id="hgGold" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#EBD388"/><stop offset="42%" stop-color="#C79A3E"/><stop offset="100%" stop-color="#A67C2A"/>
+          </linearGradient>
+          <linearGradient id="hgMain" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#DB9066"/><stop offset="100%" stop-color="#AC5B37"/>
+          </linearGradient>
+          <radialGradient id="hgWell" cx="50%" cy="45%" r="52%">
+            <stop offset="64%" stop-color="#000000" stop-opacity="0"/><stop offset="100%" stop-color="#8A7B55" stop-opacity="0.13"/>
+          </radialGradient>
         </defs>
-        <circle cx="230" cy="235" r="220" fill="url(#hgGlow)"/>
-        <ellipse cx="232" cy="422" rx="150" ry="18" fill="#8A8272" opacity="0.10"/>
-        <circle cx="230" cy="240" r="170" fill="url(#hgPlate)" stroke="#E4DDCC" stroke-width="2"/>
-        <circle cx="230" cy="240" r="151" fill="none" stroke="#EDE6D6" stroke-width="1.5"/>
-        <!-- ごはん -->
-        <ellipse cx="168" cy="214" rx="56" ry="50" fill="#FFFFFF" stroke="#E4DDCC" stroke-width="1.5"/>
-        <path d="M120 207 q48 -34 96 0 q-14 21 -48 21 q-34 0 -48 -21 z" fill="#F4EFE4"/>
-        <circle cx="150" cy="202" r="2.4" fill="#E7DFCD"/><circle cx="172" cy="198" r="2.4" fill="#E7DFCD"/><circle cx="192" cy="205" r="2.4" fill="#E7DFCD"/><circle cx="162" cy="212" r="2.2" fill="#E7DFCD"/><circle cx="184" cy="213" r="2.2" fill="#E7DFCD"/>
-        <!-- 焼き魚（主菜） -->
-        <path d="M262 176 q58 -4 74 30 q16 38 -28 56 q-54 20 -76 -22 q-16 -44 30 -64 z" fill="#DE8E63"/>
-        <path d="M278 196 q40 4 46 34" stroke="#F3C6A2" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.75"/>
-        <path d="M270 216 q42 2 54 26" stroke="#F3C6A2" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6"/>
-        <!-- ブロッコリー -->
-        <g fill="#6E8A5E"><circle cx="150" cy="302" r="16"/><circle cx="169" cy="294" r="14"/><circle cx="167" cy="310" r="13"/><circle cx="152" cy="288" r="12"/></g>
-        <rect x="157" y="306" width="7" height="15" rx="3" fill="#8DA57C"/>
-        <!-- ミニトマト -->
-        <circle cx="212" cy="310" r="15" fill="#CF6A4F"/><circle cx="207" cy="304" r="4" fill="#E89B83" opacity="0.7"/>
-        <!-- レモン -->
-        <path d="M252 302 a26 26 0 0 1 40 12 l-40 14 z" fill="#E7C24C"/>
-        <path d="M252 302 a26 26 0 0 1 40 12 l-40 14 z" fill="none" stroke="#F2DE95" stroke-width="2"/>
+        <circle cx="230" cy="230" r="226" fill="url(#hgGlow)"/>
+        <ellipse cx="232" cy="400" rx="150" ry="15" fill="#8A7B55" opacity="0.13"/>
+        <!-- 皿: 金縁 + アイボリー -->
+        <circle cx="230" cy="236" r="160" fill="url(#hgGold)"/>
+        <circle cx="230" cy="236" r="154" fill="url(#hgPlate)"/>
+        <circle cx="230" cy="236" r="154" fill="url(#hgWell)"/>
+        <circle cx="230" cy="236" r="114" fill="none" stroke="url(#hgGold)" stroke-width="1.4" opacity="0.85"/>
+        <circle cx="230" cy="236" r="106" fill="none" stroke="#E6DEC9" stroke-width="1" opacity="0.6"/>
+        <path d="M106 149 A 152 152 0 0 1 230 84" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" opacity="0.30"/>
+        <!-- ソースのドリズル -->
+        <path d="M150 264 C 188 302, 274 302, 312 256" fill="none" stroke="#795738" stroke-width="6" stroke-linecap="round" opacity="0.20"/>
+        <circle cx="318" cy="250" r="2.8" fill="#795738" opacity="0.26"/><circle cx="146" cy="260" r="2.2" fill="#795738" opacity="0.22"/>
+        <!-- 主菜: 2枚のメダイヨン -->
+        <ellipse cx="214" cy="246" rx="40" ry="31" fill="url(#hgMain)"/>
+        <ellipse cx="250" cy="228" rx="40" ry="31" fill="url(#hgMain)"/>
+        <ellipse cx="250" cy="222" rx="40" ry="29" fill="#ECAB7E" opacity="0.32"/>
+        <ellipse cx="214" cy="240" rx="40" ry="29" fill="#ECAB7E" opacity="0.28"/>
+        <path d="M226 224 q24 -8 48 2" stroke="#F5CBA7" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+        <path d="M190 242 q22 -7 46 2" stroke="#F5CBA7" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.55"/>
+        <!-- 金箔アクセント -->
+        <path d="M262 208 l3 6.5 l6.5 3 l-6.5 3 l-3 6.5 l-3 -6.5 l-6.5 -3 l6.5 -3 z" fill="#D9B65E"/>
+        <!-- ハーブ（マイクログリーン）-->
+        <g stroke="#5E7A50" stroke-width="2" fill="none" stroke-linecap="round">
+          <path d="M206 216 q -5 -20 -7 -35"/><path d="M206 216 q 3 -19 9 -31"/><path d="M206 216 q -13 -13 -19 -21"/>
+        </g>
+        <circle cx="198" cy="180" r="2" fill="#6E8A5E"/><circle cx="215" cy="184" r="1.8" fill="#6E8A5E"/><circle cx="186" cy="194" r="1.8" fill="#6E8A5E"/>
+        <!-- 微細ガーニッシュ -->
+        <circle cx="278" cy="256" r="3" fill="#6E8A5E"/><circle cx="268" cy="268" r="2.2" fill="#6E8A5E" opacity="0.7"/>
+        <circle cx="186" cy="228" r="2.6" fill="#C79A3E"/><circle cx="288" cy="240" r="2.2" fill="#C79A3E" opacity="0.8"/>
         <!-- 浮遊チップ: カロリー -->
-        <g class="hero-chip"><rect x="298" y="82" width="120" height="46" rx="23" fill="#556B4E"/><text x="358" y="111" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="21" fill="#fff">484 <tspan font-size="12" font-weight="500">kcal</tspan></text></g>
+        <g class="hero-chip">
+          <rect x="300" y="78" width="124" height="48" rx="24" fill="#556B4E"/>
+          <rect x="301.6" y="79.6" width="120.8" height="44.8" rx="22.4" fill="none" stroke="#D9B65E" stroke-width="1" opacity="0.5"/>
+          <text x="362" y="108" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="21" fill="#fff">512 <tspan font-size="12" font-weight="500" fill="#E9D7A6">kcal</tspan></text>
+        </g>
         <!-- 浮遊チップ: PFCドーナツ -->
-        <g class="hero-chip hero-chip-b"><circle cx="80" cy="128" r="35" fill="#fff" stroke="#E4DDCC"/><circle cx="80" cy="128" r="22" fill="none" stroke="#EDE6D6" stroke-width="7"/><g transform="rotate(-90 80 128)"><circle cx="80" cy="128" r="22" fill="none" stroke="#D06A4E" stroke-width="7" stroke-dasharray="43 95" stroke-linecap="round"/><circle cx="80" cy="128" r="22" fill="none" stroke="#E0A73B" stroke-width="7" stroke-dasharray="20 118" stroke-dashoffset="-43" stroke-linecap="round"/><circle cx="80" cy="128" r="22" fill="none" stroke="#5E86A8" stroke-width="7" stroke-dasharray="75 63" stroke-dashoffset="-63" stroke-linecap="round"/></g><text x="80" y="132" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#556B4E">PFC</text></g>
+        <g class="hero-chip hero-chip-b">
+          <circle cx="76" cy="120" r="37" fill="#fff"/>
+          <circle cx="76" cy="120" r="37" fill="none" stroke="#E7CC7E" stroke-width="1.2"/>
+          <circle cx="76" cy="120" r="22" fill="none" stroke="#EFE8D8" stroke-width="7"/>
+          <g transform="rotate(-90 76 120)">
+            <circle cx="76" cy="120" r="22" fill="none" stroke="#AC5B37" stroke-width="7" stroke-dasharray="41 97" stroke-linecap="round"/>
+            <circle cx="76" cy="120" r="22" fill="none" stroke="#C79A3E" stroke-width="7" stroke-dasharray="22 116" stroke-dashoffset="-41" stroke-linecap="round"/>
+            <circle cx="76" cy="120" r="22" fill="none" stroke="#5E7A50" stroke-width="7" stroke-dasharray="75 63" stroke-dashoffset="-63" stroke-linecap="round"/>
+          </g>
+          <text x="76" y="124" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#556B4E" letter-spacing="0.06em">PFC</text>
+        </g>
         <!-- 浮遊チップ: たんぱく質 -->
-        <g class="hero-chip hero-chip-c"><rect x="322" y="332" width="98" height="40" rx="20" fill="#fff" stroke="#E4DDCC"/><circle cx="345" cy="352" r="6" fill="#D06A4E"/><text x="359" y="357" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#2B2A26">P 36g</text></g>
+        <g class="hero-chip hero-chip-c">
+          <rect x="320" y="332" width="102" height="42" rx="21" fill="#fff"/>
+          <rect x="320" y="332" width="102" height="42" rx="21" fill="none" stroke="#E7CC7E" stroke-width="1.1"/>
+          <circle cx="343" cy="353" r="5.5" fill="#AC5B37"/>
+          <text x="356" y="358" font-family="Inter, sans-serif" font-size="13" font-weight="600" fill="#2B2A26">P 32g</text>
+        </g>
         <!-- きらめき -->
-        <path d="M402 172 l4 10 l10 4 l-10 4 l-4 10 l-4 -10 l-10 -4 l10 -4 z" fill="#C9A24B" opacity="0.85"/>
+        <path d="M406 160 l3.4 9 l9 3.4 l-9 3.4 l-3.4 9 l-3.4 -9 l-9 -3.4 l9 -3.4 z" fill="#C79A3E" opacity="0.85"/>
+        <path d="M40 244 l2.4 6.2 l6.2 2.4 l-6.2 2.4 l-2.4 6.2 l-2.4 -6.2 l-6.2 -2.4 l6.2 -2.4 z" fill="#C79A3E" opacity="0.5"/>
       </svg>
     </div>
   </div>
