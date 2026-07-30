@@ -286,6 +286,7 @@ em{font-style:normal}
 .pick-item{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;border:1px solid var(--line-soft);background:#fff;border-radius:11px;padding:10px 12px;cursor:pointer}
 .pick-item:hover{border-color:var(--sage);background:var(--sage-soft)}
 .pick-nm{font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.4}
+.pick-badge{display:inline-block;margin-right:6px;font-size:10px;font-weight:700;color:#fff;background:var(--sage);border-radius:5px;padding:1px 6px;vertical-align:middle}
 .pick-mac{font-size:11px;color:var(--muted)}
 .pick-note{font-size:12.5px;color:var(--muted);padding:10px 4px;line-height:1.6}
 .rz-picker-note{font-size:11px;color:var(--muted);line-height:1.65;margin-top:10px;border-top:1px dashed var(--line-soft);padding-top:9px}

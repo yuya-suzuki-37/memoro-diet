@@ -47,13 +47,19 @@ async function loadFoodDB() {
   if (FOOD_DB) return FOOD_DB;
   if (foodDbLoading) return foodDbLoading;
   foodDbLoading = (async () => {
-    const [foods, al] = await Promise.all([
+    const [foods, al, dishes] = await Promise.all([
       fetch('seibunhyo.json').then((r) => r.json()),
       fetch('aliases.json').then((r) => r.json()).catch(() => ({ aliases: [] })),
+      fetch('dishes.json').then((r) => r.json()).catch(() => []),   // 定番料理(成分表レシピ)
     ]);
+    const aliases = [];
+    for (const d of dishes) {                    // 料理を先頭に混ぜ、キーワードをエイリアス化
+      d._dish = true;
+      foods.unshift(d);
+      for (const kw of (d.kw || [])) aliases.push([normJa(kw), d.i]);
+    }
     foods.forEach((f) => { f._n = normJa(f.n); f._b = bigrams(f._n); });
     const byId = new Map(foods.map((f) => [f.i, f]));
-    const aliases = [];
     for (const a of (al.aliases || [])) for (const kw of a.kw) aliases.push([normJa(kw), a.id]);
     aliases.sort((x, y) => y[0].length - x[0].length);
     FOOD_DB = { foods, byId, aliases };
@@ -399,16 +405,24 @@ function renderPickResults(q) {
   if (!q.trim()) { wrap.innerHTML = '<div class="pick-note">食品名を入力すると候補が出ます。</div>'; return; }
   const list = searchFoods(q, 12);
   if (!list.length) { wrap.innerHTML = '<div class="pick-note">見つかりませんでした。別の言い方でお試しください（例：からあげ→唐揚げ）。</div>'; return; }
-  wrap.innerHTML = list.map((f) => `<button type="button" class="pick-item" data-id="${f.i}">
-      <span class="pick-nm">${esc(shortFoodName(f.n))}</span>
-      <span class="pick-mac">100gあたり ${Math.round(f.kcal)}kcal・P${num(f.p, 1)} F${num(f.f, 1)} C${num(f.c, 1)}</span>
-    </button>`).join('');
+  wrap.innerHTML = list.map((f) => {
+    const badge = f._dish ? '<span class="pick-badge">料理</span>' : '';
+    const serv = (f._dish && f.serv) ? `　/　1人前 約${f.serv}g` : '';
+    return `<button type="button" class="pick-item" data-id="${f.i}">
+      <span class="pick-nm">${badge}${esc(shortFoodName(f.n))}</span>
+      <span class="pick-mac">100gあたり ${Math.round(f.kcal)}kcal・P${num(f.p, 1)} F${num(f.f, 1)} C${num(f.c, 1)}${serv}</span>
+    </button>`;
+  }).join('');
 }
 function applyPick(id) {
   const rec = FOOD_DB && FOOD_DB.byId.get(id); if (!rec) return;
   const gInput = $('pick-grams');
   let grams = gInput ? parseFloat(gInput.value) : 0;
   if (!(grams > 0)) grams = 100;
+  // 定番料理を「追加」する時、量を触っていなければ1人前(serv)を既定量にする
+  if (pickerFor === 'add' && rec._dish && rec.serv && gInput && parseFloat(gInput.value) === Number(gInput.defaultValue)) {
+    grams = rec.serv;
+  }
   const n = foodNutrition(rec, grams);
   const entry = { g0: grams, g: grams, removed: false, name: shortFoodName(rec.n), src: 'seibun',
     base: { kcal: n.kcal, p: n.p, f: n.f, c: n.c, salt: n.salt, fib: n.fib } };
@@ -429,7 +443,7 @@ function pickerPanel() {
     <input id="pick-input" class="rz-picker-input" type="text" autocomplete="off" enterkeyhint="search" placeholder="食品名を入力（例：さば・木綿豆腐・キムチ）">
     <label class="rz-picker-g">量 <input id="pick-grams" type="number" min="5" step="5" value="${defG}"> g</label>
     <div id="pick-results" class="rz-picker-results"><div class="pick-note">食品名を入力すると、成分表の候補が出ます。</div></div>
-    <p class="rz-picker-note">日本食品標準成分表(八訂)にある食品から選べます。チャーハン等の複合料理は無い場合があり、その時は近い食品や材料を選んでください。</p>`}
+    <p class="rz-picker-note">「料理」バッジ付きは定番料理（成分表レシピで計算・1人前量が自動で入る）。素材・単品も検索できます。無ければ近い食品を選んでください。</p>`}
   </div>`;
 }
 
